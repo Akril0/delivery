@@ -1,30 +1,18 @@
 <h1>Bot for resturants and delivery</h1>
 
-<<<<<<< HEAD
-What ypu need to do to start the application.
+<h4 style="font-size: 18px">What y0u need to do to start the application.</h4>
 
-1) Go to [telegram](https://t.me/BotFather) and create new bot.
+<ol style="font-size: 16px">
+<li>Go to <a href="https://t.me/BotFather"> BotFather</a> and create new bot.</li>
 
-2) Copy the token of your new bot.
+<li>Copy the token of your new bot.</li>
 
-3) In project create new .env file and API_KEY_BOT='YOUR_TOKEN' and replace [YOUR_TOKEN] with token that ypu copied.
+<li>In project create new .env file and API_KEY_BOT='YOUR_TOKEN' and replace [YOUR_TOKEN] with token that you copied.</li>
 
-4) In terminal write ```npm i``` to dowload node modules.
+<li>In terminal write <code>npm i</code> to dowload node modules.</li>
 
-5) In terminal write ```npm start``` to start the application.
-=======
-What ypu need to do to start the application:
-
-1) go to [telegram](https://t.me/BotFather) and create new bot;
-
-2) copy the token of your new bot;
-
-3) in project create new .env file and API_KEY_BOT='YOUR_TOKEN' and replace [YOUR_TOKEN] with token that ypu copied;
-   
-4) in terminal write ```npm i``` to dowload node modules;
-
-5) in terminal write ```npm start``` to start the application;
-
+<li>In terminal write <code>npm start</code> to start the application.</li>
+</ol>
 
                 
->>>>>>> origin/master
+
