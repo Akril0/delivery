@@ -1,6 +1,6 @@
 <h1>Bot for resturants and delivery</h1>
 
-What ypu need to do to start the application
+What ypu need to do to start the application:
 
 1) go to [telegram](https://t.me/BotFather) and create new bot;
 
