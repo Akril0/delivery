@@ -1,7 +1,9 @@
 const {BaseScene, Extra, Markup} = require('telegraf');
 const {generateKeyboard} = require('../../utils/generateKeyboard.js');
 const sectionsList = require('../../utils/categoriesList.js');
+const OnTextDeleteMessage = require('../../Composers/OnTextDeleteMessage.composer.js');
 const menuData = require('../../data/menu.json');
+
 const confirmOrder = new BaseScene('confirmOrder');
 
 confirmOrder.enter(async ctx => {
@@ -19,15 +21,15 @@ confirmOrder.enter(async ctx => {
     }
 });
 
-confirmOrder.command('home',async (ctx) => {
+confirmOrder.command('home', async (ctx) => {
 
-    try{
-        await ctx.deleteMessage(ctx.message.message_id).catch(e=>{
-            console.log('Delete message error\n', e)
+    try {
+        await ctx.deleteMessage(ctx.message.message_id).catch(e => {
+            console.log('Delete message error\n', e);
         });
 
-        await ctx.deleteMessage(ctx.session.keyboardMessageId).catch(e=>{
-            console.log('Delete message error\n', e)
+        await ctx.deleteMessage(ctx.session.keyboardMessageId).catch(e => {
+            console.log('Delete message error\n', e);
         });
 
         //Creating keyboard
@@ -42,7 +44,7 @@ confirmOrder.command('home',async (ctx) => {
 
         //Entering menu scene
         await ctx.scene.enter('menu');
-    }catch (e) {
+    } catch (e) {
         console.error('confirmOrder /home error\n', e);
     }
 });
@@ -50,12 +52,12 @@ confirmOrder.command('home',async (ctx) => {
 confirmOrder.hears('⬅️Вернуться к меню', async ctx => {
     try {
 
-        await ctx.deleteMessage(ctx.message.message_id).catch(e=>{
-            console.log('Delete message error\n', e)
+        await ctx.deleteMessage(ctx.message.message_id).catch(e => {
+            console.log('Delete message error\n', e);
         });
 
-        await ctx.deleteMessage(ctx.session.keyboardMessageId).catch(e=>{
-            console.log('Delete message error\n', e)
+        await ctx.deleteMessage(ctx.session.keyboardMessageId).catch(e => {
+            console.log('Delete message error\n', e);
         });
 
         //Creating keyboard
@@ -75,14 +77,6 @@ confirmOrder.hears('⬅️Вернуться к меню', async ctx => {
     }
 });
 
-confirmOrder.on('text', async (ctx) => {
-    try{
-        await ctx.deleteMessage(ctx.message.message_id).catch(e=>{
-            console.log('Delete message error\n', e)
-        });
-    } catch (e) {
-        console.error('confirmOrder text error\n', e);
-    }
-});
+confirmOrder.use(OnTextDeleteMessage);
 
 module.exports = confirmOrder;

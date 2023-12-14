@@ -1,7 +1,7 @@
 const {Composer, Extra, Markup} = require('telegraf');
-const {generateKeyboard} = require('../utils/generateKeyboard.js');
-const sectionsList = require('../utils/categoriesList.js');
-const menuData = require('../data/menu.json');
+const {generateKeyboard} = require('../../utils/generateKeyboard.js');
+const sectionsList = require('../../utils/categoriesList.js');
+const menuData = require('../../data/menu.json');
 
 const composer = new Composer()
 composer.hears(/^\/(start|home)$/, async (ctx) => {

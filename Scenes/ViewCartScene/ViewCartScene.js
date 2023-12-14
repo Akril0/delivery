@@ -1,17 +1,9 @@
 const {BaseScene, Extra, Markup} = require('telegraf');
 const {generateKeyboard} = require('../../utils/generateKeyboard.js');
 const sectionsList = require('../../utils/categoriesList.js');
+const viewCartFunc = require('../../utils/viewCartFunc.js');
+const OnTextDeleteMessage = require('../../Composers/OnTextDeleteMessage.composer.js');
 const menuData = require('../../data/menu.json');
-
-
-async function viewCartFunc(ctx, position) {
-    let totalPositionPrice = position.count * Number(position.price.match(/(\d+)/)[0]);
-    await ctx.reply(`${position.title}\n` +
-        `цена за один: ${position.price}\n` +
-        `количество: ${position.count}\n` +
-        `общая цена: ${totalPositionPrice}`);
-}
-
 
 
 const viewCart = new BaseScene('viewCart');
@@ -42,16 +34,16 @@ viewCart.enter(async ctx => {
     }
 });
 
-viewCart.command('home',async (ctx) => {
-    try{
-        await ctx.deleteMessage(ctx.message.message_id).catch(e=>{
-            console.log('Delete message error\n', e)
+viewCart.command('home', async (ctx) => {
+    try {
+        await ctx.deleteMessage(ctx.message.message_id).catch(e => {
+            console.log('Delete message error\n', e);
         });
 
         //Delete all view cart
-        for (let i = ctx.session.keyboardMessageId; i <= ctx.session.keyboardMessageId + ctx.session.userData.cart.length+1; i++) {
-            await ctx.deleteMessage(i).catch(e=>{
-                console.log('Delete message error\n', e)
+        for (let i = ctx.session.keyboardMessageId; i <= ctx.session.keyboardMessageId + ctx.session.userData.cart.length + 1; i++) {
+            await ctx.deleteMessage(i).catch(e => {
+                console.log('Delete message error\n', e);
             });
         }
 
@@ -67,7 +59,7 @@ viewCart.command('home',async (ctx) => {
 
         //Entering menu scene
         await ctx.scene.enter('menu');
-    }catch (e) {
+    } catch (e) {
         console.error('viewCart /home error\n', e);
     }
 });
@@ -75,14 +67,14 @@ viewCart.command('home',async (ctx) => {
 
 viewCart.hears('⬅️Назад', async (ctx) => {
     try {
-        await ctx.deleteMessage(ctx.message.message_id).catch(e=>{
-            console.log('Delete message error\n', e)
+        await ctx.deleteMessage(ctx.message.message_id).catch(e => {
+            console.log('Delete message error\n', e);
         });
 
         //Delete all view cart
-        for (let i = ctx.session.keyboardMessageId; i <= ctx.session.keyboardMessageId + ctx.session.userData.cart.length+1; i++) {
-            await ctx.deleteMessage(i).catch(e=>{
-                console.log('Delete message error\n', e)
+        for (let i = ctx.session.keyboardMessageId; i <= ctx.session.keyboardMessageId + ctx.session.userData.cart.length + 1; i++) {
+            await ctx.deleteMessage(i).catch(e => {
+                console.log('Delete message error\n', e);
             });
         }
 
@@ -105,14 +97,6 @@ viewCart.hears('⬅️Назад', async (ctx) => {
 
 });
 
-viewCart.on('text', async (ctx) => {
-    try{
-        await ctx.deleteMessage(ctx.message.message_id).catch(e=>{
-            console.log('Delete message error\n', e)
-        });
-    }catch (e) {
-        console.error('viewCart text error\n', e);
-    }
-});
+viewCart.use(OnTextDeleteMessage);
 
 module.exports = viewCart;

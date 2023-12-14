@@ -1,37 +1,18 @@
 const {BaseScene, Extra, Markup} = require('telegraf');
 const {generateKeyboard} = require('../../utils/generateKeyboard.js');
 const sectionsList = require('../../utils/categoriesList.js');
+const generateMsgAddToCart = require('../../utils/generateMsgAddToCart.js');
+const OnTextDeleteMessage = require('../../Composers/OnTextDeleteMessage.composer.js');
 const menuData = require('../../data/menu.json');
 
-const generateMsgAddToCart = (ctx) => {
-    return {
-        text: `${ctx.session.addToCart.title}\n` +
-            `цена за один: ${ctx.session.addToCart.price}\n` +
-            `количество: ${ctx.session.addToCart.count}\n` +
-            `общая цена: ${ctx.session.addToCart.count * Number(ctx.session.addToCart.price.match(/(\d+)/)[0])}`,
-        extra: Extra.markup(Markup.inlineKeyboard(
-            [
-                [
-                    Markup.callbackButton('-', 'subtractCount'),
-                    Markup.callbackButton('+', 'addCount'),
-                ],
-                [
-                    Markup.callbackButton('❌Отменить', 'cancelPosition'),
-                    Markup.callbackButton('✅Подтвердить', 'confirmPosition'),
-                ],
-            ],
-        ).resize()),
-    };
-};
-
 const addToCart = new BaseScene('addToCart');
-addToCart.command('home',async (ctx) => {
-    try{
-        await ctx.deleteMessage(ctx.message.message_id).catch(e=>{
-            console.log('Delete message error\n', e)
+addToCart.command('home', async (ctx) => {
+    try {
+        await ctx.deleteMessage(ctx.message.message_id).catch(e => {
+            console.log('Delete message error\n', e);
         });
-        await ctx.deleteMessage(ctx.session.firstMsgId).catch(e=>{
-            console.log('Delete message error\n', e)
+        await ctx.deleteMessage(ctx.session.firstMsgId).catch(e => {
+            console.log('Delete message error\n', e);
         });
 
         //Creating keyboard
@@ -46,7 +27,7 @@ addToCart.command('home',async (ctx) => {
 
         //Entering menu scene
         await ctx.scene.enter('menu');
-    }catch (e){
+    } catch (e) {
         console.error('addToCart home error\n', e);
     }
 });
@@ -88,8 +69,8 @@ addToCart.action('confirmPosition', async (ctx) => {
 
 
         //Delete message with inline keyboard
-        await ctx.deleteMessage(ctx.update.callback_query.message.message_id).catch(e=>{
-            console.log('Delete message error\n', e)
+        await ctx.deleteMessage(ctx.update.callback_query.message.message_id).catch(e => {
+            console.log('Delete message error\n', e);
         });
 
         //Creating keyboard
@@ -116,8 +97,8 @@ addToCart.action('cancelPosition', async (ctx) => {
         ctx.session.addToCart = {};
 
         //Delete message with inline keyboard
-        await ctx.deleteMessage(ctx.update.callback_query.message.message_id).catch(e=>{
-            console.log('Delete message error\n', e)
+        await ctx.deleteMessage(ctx.update.callback_query.message.message_id).catch(e => {
+            console.log('Delete message error\n', e);
         });
 
         //Creating keyboard
@@ -143,8 +124,8 @@ addToCart.hears(/(\d+)/, async (ctx) => {
         ctx.session.addToCart.count = Number(ctx.message.text);
 
         //Delete user message
-        await ctx.deleteMessage(ctx.message.message_id).catch(e=>{
-            console.log('Delete message error\n', e)
+        await ctx.deleteMessage(ctx.message.message_id).catch(e => {
+            console.log('Delete message error\n', e);
         });
 
         //Edit message
@@ -160,14 +141,6 @@ addToCart.hears(/(\d+)/, async (ctx) => {
     }
 });
 
-addToCart.on('text', async (ctx) => {
-    try{
-        await ctx.deleteMessage(ctx.message.message_id).catch(e=>{
-            console.log('Delete message error\n', e)
-        });
-    }catch (e) {
-        console.error('addToCart text error\n', e);
-    }
-});
+addToCart.use(OnTextDeleteMessage);
 
 module.exports = addToCart;
