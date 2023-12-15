@@ -1,8 +1,14 @@
 const {BaseScene, Extra, Markup} = require('telegraf');
-const {generateKeyboard} = require('../../utils/generateKeyboard.js');
-const sectionsList = require('../../utils/categoriesList.js');
+const {generateKeyboard} = require('../../utils/generateKeyboardSize.js');
+const generateAndSendKeyBoard = require('../../utils/generateAndSendKeyboard.js');
+const sectionsList = require('../../utils/sectionsList.js');
 const generateMsgAddToCart = require('../../utils/generateMsgAddToCart.js');
+const AddToCartHearsNumber = require('../../Composers/AddToCartComposer/AddToCartHearsNumber.composer.js');
+const AddToCartActionCancelPosition = require('../../Composers/AddToCartComposer/AddToCartActionCancelPosition.composer.js');
+const AddToCartActionConfirmPosition = require('../../Composers/AddToCartComposer/AddToCartActionConfirmPosition.composer.js');
+const AddToCartActionSubtractCount = require('../../Composers/AddToCartComposer/AddToCartActionSubtractCount.composer.js');
 const OnTextDeleteMessage = require('../../Composers/OnTextDeleteMessage.composer.js');
+const AddToCartActionAddCount = require('../../Composers/AddToCartComposer/AddToCartActionAddCount.composer.js');
 const menuData = require('../../data/menu.json');
 
 const addToCart = new BaseScene('addToCart');
@@ -15,15 +21,7 @@ addToCart.command('home', async (ctx) => {
             console.log('Delete message error\n', e);
         });
 
-        //Creating keyboard
-        const keyboard = generateKeyboard(sectionsList(menuData));
-        keyboard.push(['✅Подтвердить заказ', '🛒Корзина']);
-
-        //Send keyboard and name of scene
-        await ctx.reply('МЕНЮ', Extra.markup(
-            Markup.keyboard(
-                keyboard,
-            ).resize())).then(res => ctx.session.keyboardMessageId = res.message_id);
+        await generateAndSendKeyBoard(ctx);
 
         //Entering menu scene
         await ctx.scene.enter('menu');
@@ -32,115 +30,11 @@ addToCart.command('home', async (ctx) => {
     }
 });
 
-addToCart.action('addCount', async (ctx) => {
-    try {
-        //Add one count to session
-        ctx.session.addToCart.count += 1;
-
-        //Edit message
-        const messageParams = generateMsgAddToCart(ctx);
-        await ctx.editMessageText(messageParams.text, messageParams.extra);
-    } catch (e) {
-        console.error('addToCart addCount action error\n', e);
-    }
-});
-addToCart.action('subtractCount', async (ctx) => {
-    try {
-        //Subtract one count from session
-        if (ctx.session.addToCart.count !== 1) {
-            ctx.session.addToCart.count -= 1;
-        }
-
-        //Edit message
-        const messageParams = generateMsgAddToCart(ctx);
-        await ctx.editMessageText(messageParams.text, messageParams.extra);
-    } catch (e) {
-        console.error('addToCart subtractCount action error\n', e);
-    }
-});
-
-addToCart.action('confirmPosition', async (ctx) => {
-    try {
-        //Replacing position to cart
-        ctx.session.userData.cart.push({...ctx.session.addToCart});
-
-        //Clear addToCart session
-        ctx.session.addToCart = {};
-
-
-        //Delete message with inline keyboard
-        await ctx.deleteMessage(ctx.update.callback_query.message.message_id).catch(e => {
-            console.log('Delete message error\n', e);
-        });
-
-        //Creating keyboard
-        const keyboard = generateKeyboard(sectionsList(menuData));
-        keyboard.push(['✅Подтвердить заказ', '🛒Корзина']);
-
-        //Send keyboard and name of scene
-        await ctx.reply('МЕНЮ', Extra.markup(
-            Markup.keyboard(
-                keyboard,
-            ).resize())).then(res => ctx.session.keyboardMessageId = res.message_id);
-
-        //Entering menu scene
-        await ctx.scene.enter('menu');
-
-    } catch (e) {
-        console.error('addToCart confirmPosition action error\n', e);
-    }
-});
-
-addToCart.action('cancelPosition', async (ctx) => {
-    try {
-        //Clear addToCart session
-        ctx.session.addToCart = {};
-
-        //Delete message with inline keyboard
-        await ctx.deleteMessage(ctx.update.callback_query.message.message_id).catch(e => {
-            console.log('Delete message error\n', e);
-        });
-
-        //Creating keyboard
-        const keyboard = generateKeyboard(sectionsList(menuData));
-        keyboard.push(['✅Подтвердить заказ', '🛒Корзина']);
-
-        //Send keyboard and name of scene
-        await ctx.reply('МЕНЮ', Extra.markup(
-            Markup.keyboard(
-                keyboard,
-            ).resize())).then(res => ctx.session.keyboardMessageId = res.message_id);
-
-        //Entering menu scene
-        await ctx.scene.enter('menu');
-    } catch (e) {
-        console.error('addToCart confirmPosition action error\n', e);
-    }
-});
-
-addToCart.hears(/(\d+)/, async (ctx) => {
-    try {
-        //Rewrite count to new value
-        ctx.session.addToCart.count = Number(ctx.message.text);
-
-        //Delete user message
-        await ctx.deleteMessage(ctx.message.message_id).catch(e => {
-            console.log('Delete message error\n', e);
-        });
-
-        //Edit message
-        const messageParams = generateMsgAddToCart(ctx);
-        await ctx.telegram.editMessageText(ctx.chat.id,
-            ctx.session.firstMsgId,
-            null,
-            messageParams.text,
-            messageParams.extra);
-
-    } catch (e) {
-        console.error('addToCart hears error\n', e);
-    }
-});
-
+addToCart.use(AddToCartActionAddCount);
+addToCart.use(AddToCartActionSubtractCount);
+addToCart.use(AddToCartActionConfirmPosition);
+addToCart.use(AddToCartActionCancelPosition);
+addToCart.use(AddToCartHearsNumber);
 addToCart.use(OnTextDeleteMessage);
 
 module.exports = addToCart;

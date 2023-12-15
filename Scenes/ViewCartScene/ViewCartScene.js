@@ -1,8 +1,10 @@
 const {BaseScene, Extra, Markup} = require('telegraf');
-const {generateKeyboard} = require('../../utils/generateKeyboard.js');
-const sectionsList = require('../../utils/categoriesList.js');
+const {generateKeyboard} = require('../../utils/generateKeyboardSize.js');
+const generateAndSendKeyBoard = require('../../utils/generateAndSendKeyboard.js');
 const viewCartFunc = require('../../utils/viewCartFunc.js');
+const deleteAllPositionsInChat = require('../../utils/deleteAllPositionsInChat.js');
 const OnTextDeleteMessage = require('../../Composers/OnTextDeleteMessage.composer.js');
+const ViewCartHearsBack = require('../../Composers/ViewCartComposer/ViewCartHearsBack.composer.js');
 const menuData = require('../../data/menu.json');
 
 
@@ -40,22 +42,9 @@ viewCart.command('home', async (ctx) => {
             console.log('Delete message error\n', e);
         });
 
-        //Delete all view cart
-        for (let i = ctx.session.keyboardMessageId; i <= ctx.session.keyboardMessageId + ctx.session.userData.cart.length + 1; i++) {
-            await ctx.deleteMessage(i).catch(e => {
-                console.log('Delete message error\n', e);
-            });
-        }
+        await deleteAllPositionsInChat(ctx, ctx.session.userData.cart.length + 1);
 
-        //Creating keyboard
-        const keyboard = generateKeyboard(sectionsList(menuData));
-        keyboard.push(['✅Подтвердить заказ', '🛒Корзина']);
-
-        //Send keyboard and name of scene
-        await ctx.reply('МЕНЮ', Extra.markup(
-            Markup.keyboard(
-                keyboard,
-            ).resize())).then(res => ctx.session.keyboardMessageId = res.message_id);
+        await generateAndSendKeyBoard(ctx);
 
         //Entering menu scene
         await ctx.scene.enter('menu');
@@ -65,37 +54,7 @@ viewCart.command('home', async (ctx) => {
 });
 
 
-viewCart.hears('⬅️Назад', async (ctx) => {
-    try {
-        await ctx.deleteMessage(ctx.message.message_id).catch(e => {
-            console.log('Delete message error\n', e);
-        });
-
-        //Delete all view cart
-        for (let i = ctx.session.keyboardMessageId; i <= ctx.session.keyboardMessageId + ctx.session.userData.cart.length + 1; i++) {
-            await ctx.deleteMessage(i).catch(e => {
-                console.log('Delete message error\n', e);
-            });
-        }
-
-
-        //Creating keyboard
-        const keyboard = generateKeyboard(sectionsList(menuData));
-        keyboard.push(['✅Подтвердить заказ', '🛒Корзина']);
-
-        //Send keyboard and name of scene
-        await ctx.reply('МЕНЮ', Extra.markup(
-            Markup.keyboard(
-                keyboard,
-            ).resize())).then(res => ctx.session.keyboardMessageId = res.message_id);
-
-        //Entering menu scene
-        await ctx.scene.enter('menu');
-    } catch (e) {
-        console.error('viewCart hears error\n', e);
-    }
-
-});
+viewCart.use(ViewCartHearsBack);
 
 viewCart.use(OnTextDeleteMessage);
 

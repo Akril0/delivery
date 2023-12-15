@@ -1,6 +1,7 @@
 const {Composer} = require('telegraf');
 const menuData = require('../../data/menu.json');
 const generateMsgAddToCart = require('../../utils/generateMsgAddToCart.js');
+const {deleteMessageHandler} = require('../../utils/deleteAllPositionsInChat.js');
 
 const MenuAddToCart = new Composer();
 
@@ -10,15 +11,23 @@ MenuAddToCart.action(/^add_to_cart:/, async (ctx) => {
 
         //Delete Menu
         const section = menuData.find(section => section.sectionName === ctx.session.menuSection);
-        for (let i = ctx.session.firstMsgId; i <= ctx.session.firstMsgId + section.menu.length; i++) {
-            await ctx.deleteMessage(i).catch(e => {
-                console.log('Delete message error\n', e);
-            });
-        }
+        // for (let i = ctx.session.firstMsgId; i <= ctx.session.firstMsgId + section.menu.length; i++) {
+        //     await ctx.deleteMessage(i).catch(e => {
+        //         console.log('Delete message error\n', e);
+        //     });
+        // }
+        //
+        // //Delete message with keyboard
+        // await ctx.deleteMessage(ctx.session.keyboardMessageId).catch(e => {
+        //     console.log('Delete message error\n', e);
+        // });
 
-        //Delete message with keyboard
-        await ctx.deleteMessage(ctx.session.keyboardMessageId).catch(e => {
-            console.log('Delete message error\n', e);
+        await deleteMessageHandler(ctx, {
+            menu: {
+                menuIndex: ctx.session.firstMsgId,
+                menuLength: ctx.session.firstMsgId + section.menu.length,
+            },
+            single: [ctx.session.keyboardMessageId],
         });
 
         //Adding position data to session

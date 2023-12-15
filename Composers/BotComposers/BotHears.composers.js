@@ -1,7 +1,8 @@
 const {Composer, Extra, Markup} = require('telegraf');
-const {generateKeyboard} = require('../../utils/generateKeyboard.js');
-const sectionsList = require('../../utils/categoriesList.js');
+const {generateKeyboard} = require('../../utils/generateKeyboardSize.js');
+const sectionsList = require('../../utils/sectionsList.js');
 const menuData = require('../../data/menu.json');
+const generateAndSendKeyboard = require('../../utils/generateAndSendKeyboard.js');
 
 const composer = new Composer()
 composer.hears(/^\/(start|home)$/, async (ctx) => {
@@ -18,15 +19,7 @@ composer.hears(/^\/(start|home)$/, async (ctx) => {
             id: ctx.chat.id,
         };
 
-        //Creating keyboard
-        const keyboard = generateKeyboard(sectionsList(menuData));
-        keyboard.push(['✅Подтвердить заказ', '🛒Корзина']);
-
-        //Send keyboard and name of scene
-        await ctx.reply('МЕНЮ', Extra.markup(
-            Markup.keyboard(
-                keyboard,
-            ).resize())).then(res => ctx.session.keyboardMessageId = res.message_id);
+        await generateAndSendKeyboard(ctx);
 
         //Write to session menuSection
         ctx.session.menuSection = menuData[0].sectionName;

@@ -1,5 +1,5 @@
 //Template of keyboard with 3 rows
- const generateKeyboard = (buttons) => {
+ const generateKeyboardSize = (buttons) => {
     let size = 3;
     let subarray = [];
     for (let i = 0; i < Math.ceil(buttons.length / size); i++) {
@@ -8,4 +8,4 @@
     return subarray;
 };
 
-module.exports.generateKeyboard =generateKeyboard
+module.exports.generateKeyboard =generateKeyboardSize
