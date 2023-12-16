@@ -22,7 +22,7 @@ addToCart.command('home', async (ctx) => {
         });
 
         await generateAndSendKeyBoard(ctx);
-
++-
         //Entering menu scene
         await ctx.scene.enter('menu');
     } catch (e) {
