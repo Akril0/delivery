@@ -3,13 +3,17 @@ const viewCartFunc = require('../../utils/viewCartFunc');
 
 const ViewCartActionAddCount = new Composer()
 
-ViewCartActionAddCount.action('addCount', async (ctx) => {
+ViewCartActionAddCount.action(/^add_to_cart:/, async (ctx) => {
    try {
+
+      const positionId = ctx.update.callback_query.data.split(':')[1];
+      const position = ctx.session.userData.cart(position => position.id.toString() === positionId);
       //Add one count to session
       ctx.session.addToCart.count += 1;
 
+
       //Edit message
-      const messageParams = viewCartFunc(ctx);
+      const messageParams = viewCartFunc(position);
       await ctx.editMessageText(messageParams.text, messageParams.extra);
 
 

@@ -26,8 +26,8 @@ const viewCartFunc = (position) => {
         extra: Extra.markup(Markup.inlineKeyboard(
             [
                 [
-                    Markup.callbackButton('-', 'subtractCount'),
-                    Markup.callbackButton('+', 'addCount'),
+                    Markup.callbackButton('-', `subtractCount:${position.id}`),
+                    Markup.callbackButton('+', `addCount:${position.id}`),
                 ],
                 [
                     Markup.callbackButton('❌Удалить', 'cancelPosition'),
@@ -38,21 +38,3 @@ const viewCartFunc = (position) => {
 };
 
 module.exports = viewCartFunc;
-
-return {
-    text: `${position.title}\n` +
-        `цена за один: ${position.price}\n` +
-        `количество: ${position.count}\n` +
-        `общая цена: ${position.count * Number(position.price.match(/(\d+)/)[0])}`,
-    extra: Extra.markup(Markup.inlineKeyboard(
-        [
-            [
-                Markup.callbackButton('-', 'subtractCount'),
-                Markup.callbackButton('+', 'addCount'),
-            ],
-            [
-                Markup.callbackButton('❌Удалить', 'cancelPosition'),
-            ],
-        ],
-    ).resize()),
-};
