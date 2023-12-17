@@ -1,4 +1,4 @@
-const {Composer} = require('telegraf');
+const { Composer } = require('telegraf');
 const generateMsgAddToCart = require('../../utils/generateMsgAddToCart.js');
 
 const AddToCartHearsNumberComposer = new Composer();
@@ -16,7 +16,7 @@ AddToCartHearsNumberComposer.hears(/(\d+)/, async (ctx) => {
         //Edit message
         const messageParams = generateMsgAddToCart(ctx);
         await ctx.telegram.editMessageText(ctx.chat.id,
-            ctx.session.firstMsgId,
+            ctx.session.session[0],
             null,
             messageParams.text,
             messageParams.extra);

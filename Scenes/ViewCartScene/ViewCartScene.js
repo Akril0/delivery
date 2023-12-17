@@ -30,7 +30,10 @@ viewCart.enter(async ctx => {
         for (const position of ctx.session.userData.cart) {
             let totalPositionPrice = position.count * Number(position.price.match(/(\d+)/)[0]);
             totalCartPrice += totalPositionPrice;
-            await viewCartFunc(ctx, position);
+            const message = viewCartFunc(position);
+            await ctx.reply(message.text, message.markup).then(res => {
+                ctx.session.sendedMsg.push(res.message_id)
+            })
         }
         await ctx.reply(`Общаяя сумма: ${totalCartPrice}`).then(
             res => {
