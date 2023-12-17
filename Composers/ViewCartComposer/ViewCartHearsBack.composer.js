@@ -1,23 +1,26 @@
-const {Composer, Extra, Markup} = require('telegraf');
-const {generateKeyboard} = require('../../utils/generateKeyboardSize.js');
+const { Composer, Extra, Markup } = require('telegraf');
+const { generateKeyboard } = require('../../utils/generateKeyboardSize.js');
 const sectionsList = require('../../utils/sectionsList.js');
 const menuData = require('../../data/menu.json');
 const generateAndSendKeyboard = require('../../utils/generateAndSendKeyboard.js');
+const { deleteAllMessages } = require('../../utils/deleteAllPositionsInChat.js');
 
-const  ViewCartHearsBack = new Composer();
+const ViewCartHearsBack = new Composer();
 
 ViewCartHearsBack.hears('⬅️Назад', async (ctx) => {
     try {
-        await ctx.deleteMessage(ctx.message.message_id).catch(e => {
-            console.log('Delete message error\n', e);
-        });
+        // await ctx.deleteMessage(ctx.message.message_id).catch(e => {
+        //     console.log('Delete message error\n', e);
+        // });
 
-        //Delete all view cart
-        for (let i = ctx.session.keyboardMessageId; i <= ctx.session.keyboardMessageId + ctx.session.userData.cart.length + 1; i++) {
-            await ctx.deleteMessage(i).catch(e => {
-                console.log('Delete message error\n', e);
-            });
-        }
+        // //Delete all view cart
+        // for (let i = ctx.session.keyboardMessageId; i <= ctx.session.keyboardMessageId + ctx.session.userData.cart.length + 1; i++) {
+        //     await ctx.deleteMessage(i).catch(e => {
+        //         console.log('Delete message error\n', e);
+        //     });
+        // }
+
+        await deleteAllMessages(ctx, [...ctx.session.sendedMsg, ctx.message.message_id])
 
 
         await generateAndSendKeyboard(ctx);

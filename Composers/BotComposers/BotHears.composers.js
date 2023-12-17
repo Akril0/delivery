@@ -1,5 +1,5 @@
-const {Composer, Extra, Markup} = require('telegraf');
-const {generateKeyboard} = require('../../utils/generateKeyboardSize.js');
+const { Composer, Extra, Markup } = require('telegraf');
+const { generateKeyboard } = require('../../utils/generateKeyboardSize.js');
 const sectionsList = require('../../utils/sectionsList.js');
 const menuData = require('../../data/menu.json');
 const generateAndSendKeyboard = require('../../utils/generateAndSendKeyboard.js');

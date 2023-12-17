@@ -1,8 +1,9 @@
-const {Composer, Extra, Markup} = require('telegraf');
+const { Composer, Extra, Markup } = require('telegraf');
 const sectionsList = require('../../utils/sectionsList.js');
 const {
     deleteAllPositionsInChat,
     deleteMessageHandler,
+    deleteAllMessages
 } = require('../../utils/deleteAllPositionsInChat.js');
 const menuData = require('../../data/menu.json');
 
@@ -14,13 +15,17 @@ MenuOnText.on('text', async (ctx) => {
         if (sectionsList(menuData).includes(ctx.message.text)) {
             //Delete Menu
             const section = menuData.find(section => section.sectionName === ctx.session.menuSection);
-            await deleteMessageHandler(ctx, {
-                menu: {
-                    menuIndex: ctx.session.firstMsgId,
-                    menuLength: ctx.session.firstMsgId + section.menu.length,
-                },
-                single: [ctx.message.message_id],
-            });
+            // await deleteMessageHandler(ctx, {
+            //     menu: {
+            //         menuIndex: ctx.session.firstMsgId,
+            //         menuLength: ctx.session.firstMsgId + section.menu.length,
+            //     },
+            //     single: [ctx.message.message_id],
+            // });
+
+
+            await deleteAllMessages(ctx, [...ctx.session.sendedMsg, ctx.message.message_id]);
+
 
             //Save name of new section
             ctx.session.menuSection = ctx.message.text;
@@ -33,13 +38,15 @@ MenuOnText.on('text', async (ctx) => {
         else if (ctx.message.text === '🛒Корзина') {
 
             const section = menuData.find(section => section.sectionName === ctx.session.menuSection);
-            await deleteMessageHandler(ctx, {
-                menu: {
-                    menuIndex: ctx.session.firstMsgId,
-                    menuLength: ctx.session.firstMsgId + section.menu.length,
-                },
-                single: [ctx.session.keyboardMessageId, ctx.message.message_id],
-            });
+            // await deleteMessageHandler(ctx, {
+            //     menu: {
+            //         menuIndex: ctx.session.firstMsgId,
+            //         menuLength: ctx.session.firstMsgId + section.menu.length,
+            //     },
+            //     single: [ctx.session.keyboardMessageId, ctx.message.message_id],
+            // });
+
+            await deleteAllMessages(ctx, [...ctx.session.sendedMsg, ctx.session.keyboardMessageId, ctx.message.message_id]);
 
             //Entering viewCart scene
             await ctx.scene.enter('viewCart');
@@ -50,13 +57,15 @@ MenuOnText.on('text', async (ctx) => {
 
 
             const section = menuData.find(section => section.sectionName === ctx.session.menuSection);
-            await deleteMessageHandler(ctx, {
-                menu: {
-                    menuIndex: ctx.session.firstMsgId,
-                    menuLength: ctx.session.firstMsgId + section.menu.length,
-                },
-                single: [ctx.session.keyboardMessageId, ctx.message.message_id],
-            });
+            // await deleteMessageHandler(ctx, {
+            //     menu: {
+            //         menuIndex: ctx.session.firstMsgId,
+            //         menuLength: ctx.session.firstMsgId + section.menu.length,
+            //     },
+            //     single: [ctx.session.keyboardMessageId, ctx.message.message_id],
+            // });
+
+            await deleteAllMessages(ctx, [...ctx.session.sendedMsg, ctx.session.keyboardMessageId, ctx.message.message_id]);
 
             await ctx.scene.enter('confirmOrder');
         } else {

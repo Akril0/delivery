@@ -1,7 +1,7 @@
-const {Composer} = require('telegraf');
+const { Composer } = require('telegraf');
 const menuData = require('../../data/menu.json');
 const generateMsgAddToCart = require('../../utils/generateMsgAddToCart.js');
-const {deleteMessageHandler} = require('../../utils/deleteAllPositionsInChat.js');
+const { deleteMessageHandler, deleteAllMessages } = require('../../utils/deleteAllPositionsInChat.js');
 
 const MenuAddToCart = new Composer();
 
@@ -22,13 +22,15 @@ MenuAddToCart.action(/^add_to_cart:/, async (ctx) => {
         //     console.log('Delete message error\n', e);
         // });
 
-        await deleteMessageHandler(ctx, {
-            menu: {
-                menuIndex: ctx.session.firstMsgId,
-                menuLength: ctx.session.firstMsgId + section.menu.length,
-            },
-            single: [ctx.session.keyboardMessageId],
-        });
+        // await deleteMessageHandler(ctx, {
+        //     menu: {
+        //         menuIndex: ctx.session.firstMsgId,
+        //         menuLength: ctx.session.firstMsgId + section.menu.length,
+        //     },
+        //     single: [ctx.session.keyboardMessageId],
+        // });
+
+        await deleteAllMessages(ctx, [...ctx.session.sendedMsg, ctx.session.keyboardMessageId]);
 
         //Adding position data to session
         const position = section.menu.find(position => position.id.toString() === positionId);
@@ -41,9 +43,9 @@ MenuAddToCart.action(/^add_to_cart:/, async (ctx) => {
         const messageParams = generateMsgAddToCart(ctx);
         await ctx.reply(messageParams.text, messageParams.extra)
             .then(res => {
-                    //Set new first message
-                    ctx.session.firstMsgId = res.message_id;
-                },
+                //Set new first message
+                ctx.session.sendedMsg.push(res.message_id);
+            },
             );
 
         //Entering addToCart scene

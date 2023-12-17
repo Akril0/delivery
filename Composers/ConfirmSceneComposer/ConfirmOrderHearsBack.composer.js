@@ -1,8 +1,9 @@
-const {Composer, Extra, Markup} = require('telegraf');
-const {generateKeyboard} = require('../../utils/generateKeyboardSize.js');
+const { Composer, Extra, Markup } = require('telegraf');
+const { generateKeyboard } = require('../../utils/generateKeyboardSize.js');
 const sectionsList = require('../../utils/sectionsList.js');
 const menuData = require('../../data/menu.json');
 const generateAndSendKeyboard = require('../../utils/generateAndSendKeyboard.js');
+const { deleteAllMessages } = require('../../utils/deleteAllPositionsInChat.js');
 
 const ConfirmOrderHearsBack = new Composer();
 
@@ -19,7 +20,7 @@ const deleteMessages = async (ctx) => {
 ConfirmOrderHearsBack.hears('⬅️Вернуться к меню', async ctx => {
     try {
 
-        await deleteMessages(ctx);
+        await deleteAllMessages(ctx, [ctx.message.message_id, ctx.session.keyboardMessageId]);
 
         await generateAndSendKeyboard(ctx);
 

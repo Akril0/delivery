@@ -1,5 +1,5 @@
-const {BaseScene, Extra, Markup} = require('telegraf');
-const {generateKeyboard} = require('../../utils/generateKeyboardSize.js');
+const { BaseScene, Extra, Markup } = require('telegraf');
+const { generateKeyboard } = require('../../utils/generateKeyboardSize.js');
 const generateAndSendKeyBoard = require('../../utils/generateAndSendKeyboard.js');
 const viewCartFunc = require('../../utils/viewCartFunc.js');
 const deleteAllPositionsInChat = require('../../utils/deleteAllPositionsInChat.js');
@@ -19,7 +19,9 @@ viewCart.enter(async ctx => {
 
         //Check if cart is empty
         if (ctx.session.userData.cart.length === 0) {
-            await ctx.reply('Корзина пуста');
+            await ctx.reply('Корзина пуста').then(res => {
+                ctx.session.sendedMsg.push(res.message_id)
+            });
             return;
         }
 
@@ -30,7 +32,11 @@ viewCart.enter(async ctx => {
             totalCartPrice += totalPositionPrice;
             await viewCartFunc(ctx, position);
         }
-        await ctx.reply(`Общаяя сумма: ${totalCartPrice}`);
+        await ctx.reply(`Общаяя сумма: ${totalCartPrice}`).then(
+            res => {
+                ctx.session.sendedMsg.push(res.message_id)
+            }
+        );
     } catch (e) {
         console.error('viewCart enter error\n', e);
     }
