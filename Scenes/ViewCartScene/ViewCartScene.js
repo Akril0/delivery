@@ -1,9 +1,11 @@
-const { BaseScene, Extra, Markup } = require('telegraf');
-const { generateKeyboard } = require('../../utils/generateKeyboardSize.js');
+const {BaseScene, Extra, Markup} = require('telegraf');
+const {generateKeyboard} = require('../../utils/generateKeyboardSize.js');
 const generateAndSendKeyBoard = require('../../utils/generateAndSendKeyboard.js');
 const viewCartFunc = require('../../utils/viewCartFunc.js');
 const deleteAllPositionsInChat = require('../../utils/deleteAllPositionsInChat.js');
 const OnTextDeleteMessage = require('../../Composers/OnTextDeleteMessage.composer.js');
+const ViewCartActionAddCount = require('../../Composers/ViewCartComposer/ViewCartActionAddCount.composer.js');
+const ViewCartActionSubtractCount = require('../../Composers/ViewCartComposer/ViewCartActionSubtractCount.composer.js');
 const ViewCartHearsBack = require('../../Composers/ViewCartComposer/ViewCartHearsBack.composer.js');
 const menuData = require('../../data/menu.json');
 
@@ -20,7 +22,7 @@ viewCart.enter(async ctx => {
         //Check if cart is empty
         if (ctx.session.userData.cart.length === 0) {
             await ctx.reply('Корзина пуста').then(res => {
-                ctx.session.sendedMsg.push(res.message_id)
+                ctx.session.sendedMsg.push(res.message_id);
             });
             return;
         }
@@ -31,14 +33,14 @@ viewCart.enter(async ctx => {
             let totalPositionPrice = position.count * Number(position.price.match(/(\d+)/)[0]);
             totalCartPrice += totalPositionPrice;
             const message = viewCartFunc(position);
-            await ctx.reply(message.text, message.markup).then(res => {
-                ctx.session.sendedMsg.push(res.message_id)
-            })
+            await ctx.reply(message.text, message.extra).then(res => {
+                ctx.session.sendedMsg.push(res.message_id);
+            });
         }
         await ctx.reply(`Общаяя сумма: ${totalCartPrice}`).then(
             res => {
-                ctx.session.sendedMsg.push(res.message_id)
-            }
+                ctx.session.sendedMsg.push(res.message_id);
+            },
         );
     } catch (e) {
         console.error('viewCart enter error\n', e);
@@ -66,5 +68,9 @@ viewCart.command('home', async (ctx) => {
 viewCart.use(ViewCartHearsBack);
 
 viewCart.use(OnTextDeleteMessage);
+
+viewCart.use(ViewCartActionAddCount);
+
+viewCart.use(ViewCartActionSubtractCount);
 
 module.exports = viewCart;
